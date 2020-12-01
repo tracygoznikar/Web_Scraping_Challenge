@@ -35,34 +35,27 @@ def scrape_info():
     description
 
     #image
-    url_two = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
-    browser.visit(url_two)
+    url_pic = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
+    browser.visit(url_pic)
 
     browser.links.find_by_partial_text('FULL IMAGE').click()
-
     browser.links.find_by_partial_text('more info').click()
 
     html = browser.html
     soup1 = BeautifulSoup(html, 'html.parser')
 
-    #Get the link to featured image [image=new soup]
     image = soup1.select_one('figure.lede a img').get('src')
     image
     featured_image_url = f'https://www.jpl.nasa.gov/{image}'
     featured_image_url
 
-    url_three = 'https://space-facts.com/mars/'
 
-    #Get tables using pandas
-    tables = pd.read_html(url_three)
-    #tables
 
+    url_facts = 'https://space-facts.com/mars/'
+    tables = pd.read_html(url_facts)
+    
     df = tables[0]
-    #df.head(10)
-
     facts_df = df.rename(columns={0: "Description", 1: "Mars"})
-    #facts_df
-
     facts_df.set_index("Description", inplace = True)
     
     html_table = facts_df.to_html()
@@ -70,12 +63,12 @@ def scrape_info():
 
 
     browser = init_browser()
-    url ='https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
-    browser.visit(url)
+    url_hemi ='https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url_hemi)
     html = browser.html
 
-    soup = BeautifulSoup(html,'html.parser')
-    quotes = soup.find_all('div',class_='item')
+    soup2 = BeautifulSoup(html,'html.parser')
+    quotes = soup2.find_all('div',class_='item')
     
     hemisphere_image_urls=[]
     
@@ -94,7 +87,7 @@ def scrape_info():
         #syrtis_img = 'https://astropedia.astrogeology.usgs.gov/download/Mars/Viking/syrtis_major_enhanced.tif/full.jpg'
         #valles_img = 'https://astropedia.astrogeology.usgs.gov/download/Mars/Viking/valles_marineris_enhanced.tif/full.jpg'
 
-    final_data = { 
+    mars_data = { 
     "title":title, "description":description,
     "featured_image_url":featured_image_url,
     "html_table":html_table,
@@ -106,4 +99,4 @@ def scrape_info():
 
     browser.quit()
 
-    return final_data    
+    return mars_data    
