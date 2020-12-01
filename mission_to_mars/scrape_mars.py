@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-import Pandas as pd
+import pandas as pd
 from splinter import Browser
 from webdriver_manager.chrome import ChromeDriverManager
 import time
@@ -66,14 +66,42 @@ def scrape_info():
     facts_df.set_index("Description", inplace = True)
     
     html_table = facts_df.to_html()
+    html_table
 
 
-    #hemispheres
+    browser = init_browser()
+    url ='https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
+    html = browser.html
+
+    soup = BeautifulSoup(html,'html.parser')
+    quotes = soup.find_all('div',class_='item')
+    
+    hemisphere_image_urls=[]
+    
+    for quote in quotes:
+        t = quote.find('h3').text
+        a = quote.a['href']
+        a=a.replace('search/map','download')
+        dic={}
+        dic['title']=t
+        dic['img_url']= "https://astropedia.astrogeology.usgs.gov"+a+'.tif/full.jpg'
+        hemisphere_image_urls.append(dic)
+        hemisphere_image_urls
+        
+        #cerberus_img = 'https://astropedia.astrogeology.usgs.gov/download/Mars/Viking/cerberus_enhanced.tif/full.jpg'
+        #schiaparelli_img = 'https://astropedia.astrogeology.usgs.gov/download/Mars/Viking/schiaparelli_enhanced.tif/full.jpg'
+        #syrtis_img = 'https://astropedia.astrogeology.usgs.gov/download/Mars/Viking/syrtis_major_enhanced.tif/full.jpg'
+        #valles_img = 'https://astropedia.astrogeology.usgs.gov/download/Mars/Viking/valles_marineris_enhanced.tif/full.jpg'
 
     final_data = { 
     "title":title, "description":description,
     "featured_image_url":featured_image_url,
-    "html_table":html_table}
+    "html_table":html_table,
+    "hemisphere_image_urls":hemisphere_image_urls
+    #"cerberus_img":cerberus_img
+    #"schiaparelli_img":schiaparelli_img
+    }
 
 
     browser.quit()
